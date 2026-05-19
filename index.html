@@ -1,0 +1,1921 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A simple Chrome helper for saving the Marathon Photos Live images already shown on your results page." />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="Download Marathon Photos" />
+    <meta property="og:description" content="A simple Chrome helper for saving images from marathonphotos.live results pages." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kylescheer.com/marathon-photos-extractor" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Download Marathon Photos" />
+    <meta name="twitter:description" content="A simple Chrome helper for saving images from marathonphotos.live results pages." />
+    <title>Download Marathon Photos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #10231f;
+        --accent: #147d64;
+        --accent-h: #2563eb;
+        --bg: #ffffff;
+        --bg2: #f2f7f4;
+        --border: #d9e6df;
+        --text: #10231f;
+        --muted: #5f716b;
+        --success: #15803d;
+        --success-bg: #ecfdf3;
+        --warn: #a16207;
+        --warn-bg: #fff8dd;
+        --danger: #b42318;
+        --danger-bg: #fef2f2;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.06);
+        --console-bg: #111118;
+        --console-border: #27272a;
+      }
+
+      [data-theme="dark"] {
+        --primary: #f4f4f5;
+        --accent: #34d399;
+        --accent-h: #60a5fa;
+        --bg: #161b1a;
+        --bg2: #0f1514;
+        --border: #33403c;
+        --text: #f4f7f5;
+        --muted: #9ca8a3;
+        --success: #4ade80;
+        --success-bg: #052e16;
+        --warn: #fbbf24;
+        --warn-bg: #1c1400;
+        --danger: #f87171;
+        --danger-bg: #2d0a0a;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+        --console-bg: #0a0a0d;
+        --console-border: #1e1e24;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .fas,
+      .fab {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.25em;
+        min-width: 1.25em;
+        font-family: "DM Sans", sans-serif !important;
+        font-style: normal;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .fas::before,
+      .fab::before {
+        font-family: "DM Sans", sans-serif !important;
+      }
+      .fa-moon::before {
+        content: "◐";
+      }
+      .fa-sun::before {
+        content: "○";
+      }
+      .fa-chrome::before {
+        content: "C";
+      }
+      .fa-person-running::before {
+        content: ">";
+      }
+      .fa-mobile-alt::before {
+        content: "▯";
+      }
+      .fa-list-check::before,
+      .fa-circle-check::before {
+        content: "✓";
+      }
+      .fa-triangle-exclamation::before {
+        content: "!";
+      }
+      .fa-circle-info::before {
+        content: "i";
+      }
+      .fa-wand-magic-sparkles::before {
+        content: "*";
+      }
+      .fa-chevron-up::before {
+        content: "^";
+      }
+      .fa-paste::before,
+      .fa-copy::before {
+        content: "□";
+      }
+      .fa-magnifying-glass::before {
+        content: "?";
+      }
+      .fa-folder-open::before,
+      .fa-folder-plus::before {
+        content: "▣";
+      }
+      .fa-layer-group::before {
+        content: "#";
+      }
+      .fa-circle-xmark::before {
+        content: "x";
+      }
+      .fa-ban::before {
+        content: "-";
+      }
+      .fa-clock::before {
+        content: "~";
+      }
+      .fa-download::before {
+        content: "↓";
+      }
+      .fa-stop-circle::before {
+        content: "■";
+      }
+      .fa-trash-can::before {
+        content: "×";
+      }
+      .fa-github::before {
+        content: "{}";
+        font-size: 0.86em;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg2);
+        color: var(--text);
+        line-height: 1.6;
+        margin: 0;
+        transition:
+          background 0.25s,
+          color 0.25s;
+      }
+
+      .wrapper {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 34px 22px 56px;
+      }
+
+      /* Header */
+      header {
+        text-align: left;
+        margin-bottom: 30px;
+        position: relative;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 38px;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 900;
+        letter-spacing: 0;
+        line-height: 1.05;
+        margin: 0 0 12px;
+        color: var(--text);
+      }
+
+      .lead {
+        font-size: 1.08rem;
+        color: var(--muted);
+        max-width: 680px;
+        margin: 0;
+      }
+      .site-note {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin: 12px 0 0;
+      }
+      .site-note a {
+        color: var(--accent);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .site-note a:hover {
+        text-decoration: underline;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: #e8f7ef;
+        color: #0f684f;
+        padding: 8px 13px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-top: 18px;
+        margin-right: 8px;
+      }
+      [data-theme="dark"] .badge {
+        background: #2e1f6b;
+        color: #a78bfa;
+      }
+
+      /* Theme toggle */
+      .theme-toggle {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--bg);
+        border: 1.5px solid var(--border);
+        color: var(--muted);
+        padding: 8px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 600;
+        font-family: "DM Sans", sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition: all 0.2s;
+      }
+      .theme-toggle:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* Mobile Warning */
+      .mobile-warning {
+        display: none; /* Hidden by default, shown via JavaScript on mobile devices */
+        background: var(--danger-bg);
+        border: 1px solid var(--danger);
+        border-radius: 14px;
+        margin-bottom: 24px;
+        padding: 16px 20px;
+      }
+
+      .quick-note {
+        background: #e8f7ef;
+        border: 1px solid #bce6cf;
+        border-radius: 8px;
+        margin-bottom: 18px;
+        padding: 16px 18px;
+        display: flex;
+        gap: 12px;
+        color: #0f684f;
+      }
+      .quick-note i {
+        margin-top: 4px;
+      }
+      .quick-note strong {
+        display: block;
+        margin-bottom: 2px;
+      }
+      .quick-note p {
+        margin: 0;
+        color: var(--text);
+        font-size: 0.92rem;
+      }
+      [data-theme="dark"] .quick-note {
+        background: #13251f;
+        border-color: #2a5b47;
+        color: #86efac;
+      }
+      [data-theme="dark"] .quick-note p {
+        color: var(--text);
+      }
+
+      .mobile-warning-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .mobile-warning-content i {
+        font-size: 1.5rem;
+        color: var(--danger);
+        flex-shrink: 0;
+      }
+
+      .mobile-warning-text strong {
+        display: block;
+        color: var(--danger);
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .mobile-warning-text p {
+        margin: 0;
+        color: var(--text);
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+
+      /* Requirements */
+      .req-container {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 14px;
+        overflow: hidden;
+        box-shadow: none;
+      }
+      [data-theme="dark"] .req-container {
+        border-color: #78350f;
+      }
+
+      .req-header {
+        padding: 15px 18px;
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        user-select: none;
+        font-size: 0.92rem;
+      }
+      .req-header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .arrow-icon {
+        transition: transform 0.25s;
+      }
+      .arrow-down {
+        transform: rotate(180deg);
+      }
+      .req-content {
+        padding: 0 18px 18px 42px;
+      }
+      .req-content ul {
+        margin: 0;
+        padding-left: 16px;
+        font-size: 0.86rem;
+        color: var(--muted);
+      }
+      .req-content li {
+        margin-bottom: 6px;
+      }
+
+      /* Step cards */
+      .section-heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 34px 0 14px;
+      }
+      .section-heading h2 {
+        margin: 0;
+        font-size: 1.35rem;
+        line-height: 1.2;
+      }
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .instruction-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+      .step-card {
+        background: var(--bg);
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
+      .step-num {
+        background: var(--accent);
+        color: #fff;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: 800;
+        font-size: 0.96rem;
+        margin-bottom: 12px;
+      }
+      .step-card h3 {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+      .step-card p {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      .step-card strong {
+        color: var(--text);
+      }
+      .step-card code {
+        background: var(--bg2);
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-family: "DM Mono", monospace;
+        font-size: 0.8em;
+      }
+      /* Download panel */
+      .extractor-container {
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 28px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+      }
+      .panel-label {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .field-help {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 0 12px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 190px;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 15px;
+        font-family: "DM Mono", monospace;
+        font-size: 12.5px;
+        resize: vertical;
+        background: var(--bg2);
+        color: var(--text);
+        transition:
+          border-color 0.2s,
+          background 0.25s;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        background: var(--bg);
+      }
+      textarea::placeholder {
+        color: var(--muted);
+      }
+
+      .config-box {
+        background: var(--bg2);
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        padding: 18px;
+      }
+      .save-location-box {
+        margin-top: 20px;
+      }
+
+      .detected-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .detected-row.ready {
+        color: var(--success);
+      }
+      .detected-row.warn {
+        color: var(--warn);
+      }
+      .detected-row i {
+        font-size: 0.85rem;
+      }
+      .settings-note {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+
+      /* Folder picker */
+      .folder-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      #folderBtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--bg);
+        border: 1.5px solid var(--border);
+        color: var(--text);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: "DM Sans", sans-serif;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      #folderBtn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      #folderBtn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .folder-path {
+        font-family: "DM Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--muted);
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .folder-path.selected {
+        color: var(--success);
+      }
+      .subfolder-check {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-top: 10px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .subfolder-check input {
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+      .subfolder-check.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .fsa-unavailable {
+        font-size: 0.75rem;
+        color: var(--warn);
+        margin-top: 8px;
+        display: none;
+      }
+
+      /* Progress */
+      .progress-container {
+        height: 5px;
+        background: var(--bg2);
+        border-radius: 10px;
+        overflow: hidden;
+        display: none;
+        margin: 20px 0 0;
+        border: 1px solid var(--border);
+      }
+      #progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent-h));
+        width: 0%;
+        transition: width 0.35s ease;
+        border-radius: 10px;
+      }
+
+      /* Stats bar */
+      .stats-bar {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      .stat-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 13px;
+        border-radius: 8px;
+        font-size: 0.79rem;
+        font-weight: 700;
+        font-family: "DM Mono", monospace;
+      }
+      .stat-chip.total {
+        background: var(--bg2);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .stat-chip.success {
+        background: var(--success-bg);
+        color: var(--success);
+      }
+      .stat-chip.failed {
+        background: var(--danger-bg);
+        color: var(--danger);
+      }
+      .stat-chip.dupes {
+        background: #fff7ed;
+        color: #c2410c;
+      }
+      [data-theme="dark"] .stat-chip.dupes {
+        background: #1c0f00;
+        color: #fb923c;
+      }
+      .stat-chip.eta {
+        background: #ede9fe;
+        color: #5b21b6;
+        margin-left: auto;
+      }
+      [data-theme="dark"] .stat-chip.eta {
+        background: #2e1f6b;
+        color: #a78bfa;
+      }
+
+      /* Duplicate filename toggle */
+      .dup-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+        gap: 10px;
+      }
+      .dup-toggle-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      .dup-pill-group {
+        display: flex;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .dup-pill {
+        padding: 5px 12px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        font-family: "DM Sans", sans-serif;
+        cursor: pointer;
+        background: var(--bg);
+        color: var(--muted);
+        border: none;
+        transition: all 0.15s;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .dup-pill:first-child {
+        border-right: 1.5px solid var(--border);
+      }
+      .dup-pill.active {
+        background: var(--accent);
+        color: #fff;
+      }
+      .dup-pill:hover:not(.active) {
+        background: var(--bg2);
+        color: var(--text);
+      }
+      .dup-hint {
+        font-size: 0.73rem;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+
+      /* Action buttons */
+      .action-bar {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      #startBtn {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        padding: 16px 28px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        font-family: "DM Sans", sans-serif;
+        cursor: pointer;
+        flex: 3;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      #cancelBtn {
+        background: var(--danger-bg);
+        color: var(--danger);
+        border: 1.5px solid var(--danger);
+        padding: 14px 20px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        font-family: "DM Sans", sans-serif;
+        cursor: pointer;
+        flex: 1;
+        transition: all 0.2s;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+      }
+      #clearLogBtn {
+        background: var(--bg2);
+        color: var(--muted);
+        border: 1.5px solid var(--border);
+        padding: 14px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        font-family: "DM Sans", sans-serif;
+        cursor: pointer;
+        flex: 1;
+        transition: all 0.2s;
+      }
+      #startBtn:hover {
+        background: #0f684f;
+      }
+      #cancelBtn:hover {
+        background: #fee2e2;
+      }
+      #clearLogBtn:hover {
+        border-color: var(--muted);
+        color: var(--text);
+      }
+      #startBtn:disabled {
+        background: var(--border);
+        color: var(--muted);
+        cursor: not-allowed;
+      }
+
+      /* Download updates */
+      .console-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 20px 0 8px;
+      }
+      .console-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .console-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #3f3f46;
+        display: inline-block;
+        transition: background 0.3s;
+      }
+      .console-dot.active {
+        background: var(--success);
+        box-shadow: 0 0 6px var(--success);
+        animation: pulse 1.4s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      #copyLogBtn {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.7rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+      }
+      #copyLogBtn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      #copyLogBtn:active {
+        transform: scale(0.95);
+      }
+
+      #log {
+        background: var(--bg2);
+        color: var(--muted);
+        padding: 16px;
+        border-radius: 8px;
+        font-family: "DM Mono", monospace;
+        font-size: 0.78rem;
+        height: 210px;
+        overflow-y: auto;
+        border: 1px solid var(--border);
+      }
+      .log-entry {
+        margin-bottom: 5px;
+        padding-left: 11px;
+        border-left: 2px solid #3f3f46;
+        line-height: 1.55;
+      }
+      .log-success {
+        color: var(--success);
+        border-color: var(--success);
+      }
+      .log-warn {
+        color: var(--warn);
+        border-color: var(--warn);
+      }
+      .log-info {
+        color: var(--accent-h);
+        border-color: var(--accent-h);
+      }
+      .log-dim {
+        color: var(--muted);
+        border-color: #3f3f46;
+      }
+
+      /* Footer */
+      footer {
+        margin-top: 72px;
+        padding: 44px 20px;
+        text-align: center;
+        background: var(--bg);
+        border-top: 1px solid var(--border);
+      }
+      .ko-fi-img {
+        height: 36px;
+        transition: transform 0.2s;
+        margin-bottom: 14px;
+      }
+      .ko-fi-img:hover {
+        transform: scale(1.07);
+      }
+      .text-xs {
+        font-size: 0.8rem;
+        color: var(--muted);
+        line-height: 2.2;
+      }
+      .minimal-link {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 600;
+      }
+      .minimal-link:hover {
+        color: var(--accent);
+      }
+
+      @media (max-width: 680px) {
+        .action-bar {
+          flex-direction: column;
+        }
+        h1 {
+          font-size: 2rem;
+        }
+        .stat-chip.eta {
+          margin-left: 0;
+        }
+        .theme-toggle {
+          position: static;
+          margin-bottom: 16px;
+        }
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+          <i class="fas fa-moon"></i> Dark mode
+        </button>
+        <h1>Download Your Marathon Photos</h1>
+        <p class="lead">
+          A simple helper for saving the images already shown on your
+          marathonphotos.live results page.
+        </p>
+        <p class="site-note">
+          Works only with
+          <a href="https://marathonphotos.live/" target="_blank" rel="noopener"
+            >marathonphotos.live</a
+          >.
+        </p>
+        <div class="badge">
+          <i class="fab fa-chrome"></i> Use Google Chrome on a computer
+        </div>
+        <div class="badge">
+          <i class="fas fa-person-running"></i> Made for runners, not web developers
+        </div>
+      </header>
+
+      <!-- Mobile Device Warning -->
+      <div id="mobileWarning" class="mobile-warning">
+        <div class="mobile-warning-content">
+          <i class="fas fa-mobile-alt"></i>
+          <div class="mobile-warning-text">
+            <strong>Mobile Device Detected</strong>
+            <p>
+              This works best on a laptop or desktop computer using Google
+              Chrome. Phones and tablets usually cannot save many photos at
+              once.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-note">
+        <i class="fas fa-circle-check"></i>
+        <div>
+          <strong>Before you start</strong>
+          <p>
+            Open your photo results on marathonphotos.live in Google Chrome.
+            This tool will save the preview images that are visible in the page
+            code you copy.
+          </p>
+        </div>
+      </div>
+
+      <div class="req-container">
+        <div class="req-header" onclick="toggleRequirements()">
+          <div class="req-header-left">
+            <i class="fas fa-list-check"></i>
+            <span>What You Need</span>
+          </div>
+          <i class="fas fa-chevron-up arrow-icon" id="reqArrow"></i>
+        </div>
+        <div class="req-content" id="reqContent">
+          <ul>
+            <li>
+              <strong>A computer:</strong> Use a laptop or desktop, not a
+              phone.
+            </li>
+            <li>
+              <strong>Google Chrome:</strong> The folder picker works best in
+              Chrome.
+            </li>
+            <li>
+              <strong>Enough storage:</strong> Make sure you have room for the
+              photos you are downloading.
+            </li>
+            <li>
+              <strong>Download setting:</strong> If Chrome asks where to save
+              every single photo, open Chrome Settings → Downloads and turn off
+              "Ask where to save each file before downloading."
+            </li>
+            <li>
+              <strong>Photo rights:</strong> Only use photos you are allowed to
+              download and keep.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        class="req-container"
+        style="background: var(--danger-bg); border-color: var(--danger)"
+      >
+        <div
+          class="req-header"
+          onclick="toggleRightsNotice()"
+          style="color: var(--danger)"
+        >
+          <div class="req-header-left">
+            <i class="fas fa-circle-info"></i>
+            <span>A Note About Watermarks</span>
+          </div>
+          <i class="fas fa-chevron-up arrow-icon" id="rightsArrow"></i>
+        </div>
+        <div class="req-content" id="rightsContent" style="display: none">
+          <p style="margin: 0 0 14px; color: var(--text); font-weight: 600">
+            This tool only saves image files that are already present in the
+            page code you copy. It does not unlock paid photos or bypass
+            accounts, checkout, or access controls.
+          </p>
+          <p style="margin: 0 0 14px; color: var(--text)">
+            Marathon Photos preview images may include watermarks. Removing a
+            watermark from a photo you do not own or have permission to edit can
+            violate copyright or license terms.
+          </p>
+          <p style="margin: 0; color: var(--text)">
+            For keepsakes, prints, or sharing, the safest path is to purchase
+            the official photo pack or use licensed originals.
+          </p>
+        </div>
+      </div>
+      <div
+        class="req-container"
+        style="background: rgba(52, 152, 219, 0.1); border-color: #3498db"
+      >
+        <div
+          class="req-header"
+          onclick="toggleWebPNotice()"
+          style="color: #2980b9"
+        >
+          <div class="req-header-left">
+            <i class="fas fa-wand-magic-sparkles"></i>
+            <span>How The Photo Finder Works</span>
+          </div>
+          <i class="fas fa-chevron-up arrow-icon" id="webpArrow"></i>
+        </div>
+        <div class="req-content" id="webpContent" style="display: none">
+          <p style="margin: 0 0 14px; color: var(--text)">
+            You do not need to understand the page code. After you paste it,
+            this tool looks for Marathon Photos image links automatically.
+          </p>
+          <ul style="margin: 0 0 14px; padding-left: 16px; color: var(--text)">
+            <li>
+              It looks for image links from <code>marathonphotos.live</code>
+              pages and the Marathon Photos image server.
+            </li>
+            <li>
+              If the same photo appears more than once, it saves one copy.
+            </li>
+            <li>
+              Saved files keep their photo code names, such as
+              <code>ZUKD1853.jpeg</code>.
+            </li>
+            <li>
+              If Chrome blocks a file, the download updates below will tell you
+              what happened.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-heading">
+        <div>
+          <h2>Five Simple Steps</h2>
+          <p>Do one Marathon Photos results page at a time.</p>
+        </div>
+      </div>
+
+      <div class="instruction-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Open Your Results</h3>
+          <p>
+            Go to your Marathon Photos Live results and wait until the photos
+            on the page are visible.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Open Chrome Tools</h3>
+          <p>
+            Click Chrome's three dots in the top-right corner. Choose
+            <strong>More Tools → Developer Tools</strong>.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Copy The Page Code</h3>
+          <p>
+            In the Elements panel, find <code>&lt;body&gt;</code>. Right-click
+            it and choose <strong>Copy → Copy element</strong>.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <h3>Paste It Here</h3>
+          <p>
+            Paste the copied code into the box below. You will see how many
+            photos were found.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">5</div>
+          <h3>Repeat For Page 2</h3>
+          <p>
+            After downloading, go to the next results page and repeat these
+            steps.
+          </p>
+        </div>
+      </div>
+
+      <div class="extractor-container">
+        <div class="panel-label">
+          <i class="fas fa-paste"></i>
+          <strong>Paste the copied page code here</strong>
+        </div>
+        <p class="field-help">
+          It is okay if the pasted text looks messy. This tool will find the
+          photo links for you.
+        </p>
+        <textarea
+          id="htmlInput"
+          placeholder="Paste the copied <body...> code here"
+        ></textarea>
+        <div class="detected-row" id="detectedRow">
+          <i class="fas fa-magnifying-glass"></i>
+          <span id="detectedCount">No photos detected yet.</span>
+        </div>
+
+        <div class="config-box save-location-box">
+          <div class="panel-label">
+            <i class="fas fa-folder-open"></i> Where should the photos go?
+          </div>
+          <div class="folder-row">
+            <button id="folderBtn" onclick="pickFolder()">
+              <i class="fas fa-folder-plus"></i> Choose Folder
+            </button>
+            <span class="folder-path" id="folderPath"
+              >Chrome's normal Downloads folder</span
+            >
+          </div>
+          <label class="subfolder-check disabled" id="subfolderLabel">
+            <input type="checkbox" id="subfolderCheck" />
+            Put photos in an /images subfolder
+          </label>
+          <p class="fsa-unavailable" id="fsaNotice">
+            <i class="fas fa-circle-info"></i> Folder picker requires Chrome
+            86+. Files will save to your Downloads folder instead.
+          </p>
+          <p class="settings-note">
+            The tool automatically downloads every photo it finds and keeps
+            same-name files by renaming them.
+          </p>
+        </div>
+
+        <div class="progress-container" id="progContainer">
+          <div id="progress-fill"></div>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+          <span class="stat-chip total" id="statTotal">
+            <i class="fas fa-layer-group"></i> 0 total</span
+          >
+          <span class="stat-chip success" id="statSuccess"
+            ><i class="fas fa-circle-check"></i> 0 saved</span
+          >
+          <span class="stat-chip failed" id="statFailed">
+            <i class="fas fa-circle-xmark"></i> 0 need attention</span
+          >
+          <span class="stat-chip dupes" id="statDupes" style="display: none"
+            ><i class="fas fa-ban"></i> 0 skipped</span
+          >
+          <span class="stat-chip eta" id="statEta">
+            <i class="fas fa-clock"></i> Calculating…</span
+          >
+        </div>
+
+        <div class="action-bar">
+          <button id="startBtn" onclick="startExtraction()">
+            <i class="fas fa-download"></i> Download Photos
+          </button>
+          <button id="cancelBtn" onclick="cancelExtraction()">
+            <i class="fas fa-stop-circle"></i> Cancel
+          </button>
+          <button id="clearLogBtn" onclick="clearLog()">
+            <i class="fas fa-trash-can"></i> Clear
+          </button>
+        </div>
+
+        <div class="console-header">
+          <span class="console-label"
+            ><span class="console-dot" id="consoleDot"></span> Download
+            Updates</span
+          >
+          <button
+            id="copyLogBtn"
+            onclick="copyLog()"
+            title="Copy download updates"
+          >
+            <i class="fas fa-copy"></i> Copy
+          </button>
+        </div>
+        <div id="log">
+          <div class="log-entry log-dim">
+            Ready when you are. Paste the copied page code above.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <a href="https://ko-fi.com/scheerapps" target="_blank" rel="noopener">
+        <img
+          class="ko-fi-img"
+          src="https://storage.ko-fi.com/cdn/kofi5.png?v=6"
+          alt="Support on Ko-fi"
+        />
+      </a>
+      <p class="text-xs">
+        <a
+          href="https://github.com/kyletscheer"
+          target="_blank"
+          class="minimal-link"
+        >
+          <i class="fab fa-github"></i> View Source on GitHub
+        </a>
+      </p>
+      <p class="text-xs">
+        © 2026
+        <a
+          href="https://www.kylescheer.com"
+          target="_blank"
+          class="minimal-link"
+          >Kyle Scheer</a
+        >
+      </p>
+    </footer>
+
+    <script>
+      /* ── DOM refs ─────────────────────────────────────────────────────────────── */
+      const logEl = document.getElementById("log");
+      const startBtn = document.getElementById("startBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const progFill = document.getElementById("progress-fill");
+      const progCont = document.getElementById("progContainer");
+      const statsBar = document.getElementById("statsBar");
+      const statTotal = document.getElementById("statTotal");
+      const statSuccess = document.getElementById("statSuccess");
+      const statFailed = document.getElementById("statFailed");
+      const statDupes = document.getElementById("statDupes");
+      const statEta = document.getElementById("statEta");
+      const consoleDot = document.getElementById("consoleDot");
+      const reqContent = document.getElementById("reqContent");
+      const reqArrow = document.getElementById("reqArrow");
+      const rightsContent = document.getElementById("rightsContent");
+      const rightsArrow = document.getElementById("rightsArrow");
+      const htmlInput = document.getElementById("htmlInput");
+      const detectedRow = document.getElementById("detectedRow");
+      const detectedCount = document.getElementById("detectedCount");
+      const folderPathEl = document.getElementById("folderPath");
+      const subfolderLabel = document.getElementById("subfolderLabel");
+      const subfolderCheck = document.getElementById("subfolderCheck");
+      const fsaNotice = document.getElementById("fsaNotice");
+      const themeBtn = document.getElementById("themeBtn");
+      const folderBtn = document.getElementById("folderBtn");
+      const copyLogBtn = document.getElementById("copyLogBtn");
+
+      /* ── State ────────────────────────────────────────────────────────────────── */
+      let cancelRequested = false;
+      let directoryHandle = null;
+      const concurrency = 5;
+      const dupMode = "download";
+
+      const IMAGE_EXTS = ["jpg", "jpeg", "png", "webp", "gif"];
+      const MARATHON_HOST = "static.marathon-photos.com";
+      const MARATHON_IMAGE_PATTERN =
+        /https:\/\/static\.marathon-photos\.com\/photos\/[^"'<>)]+?\.(?:jpe?g|png|webp|gif)(?:\?[^"'<>)\s]*)?/gi;
+
+      /* ── localStorage preferences ─────────────────────────────────────────────── */
+      function savePrefs() {
+        localStorage.setItem(
+          "mp_theme",
+          document.documentElement.dataset.theme,
+        );
+        localStorage.setItem("mp_subfolder", subfolderCheck.checked);
+      }
+
+      function loadPrefs() {
+        applyTheme(localStorage.getItem("mp_theme") || "light");
+        subfolderCheck.checked =
+          localStorage.getItem("mp_subfolder") === "true";
+      }
+
+      /* ── Theme ────────────────────────────────────────────────────────────────── */
+      function applyTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        themeBtn.innerHTML =
+          theme === "dark"
+            ? '<i class="fas fa-sun"></i> Light mode'
+            : '<i class="fas fa-moon"></i> Dark mode';
+      }
+
+      function toggleTheme() {
+        const next =
+          document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        applyTheme(next);
+        savePrefs();
+      }
+
+      /* ── Requirements accordion ───────────────────────────────────────────────── */
+      function toggleRequirements() {
+        const visible = reqContent.style.display !== "none";
+        reqContent.style.display = visible ? "none" : "block";
+        reqArrow.classList.toggle("arrow-down", visible);
+      }
+
+      /* ── Rights notice accordion ──────────────────────────────────────────────── */
+      function toggleRightsNotice() {
+        const visible = rightsContent.style.display !== "none";
+        rightsContent.style.display = visible ? "none" : "block";
+        rightsArrow.classList.toggle("arrow-down", visible);
+      }
+
+      /* ── WebP notice accordion ───────────────────────────────────────────────── */
+      function toggleWebPNotice() {
+        const content = document.getElementById("webpContent");
+        const arrow = document.getElementById("webpArrow");
+        const visible = content.style.display !== "none";
+
+        content.style.display = visible ? "none" : "block";
+        arrow.classList.toggle("arrow-down", visible);
+      }
+
+      /* ── Filename collision resolution ────────────────────────────────────────── */
+      // Atomically claim a unique filename from the shared seen-names Set.
+      // Called synchronously (before any await) so concurrent workers can't race.
+      function resolveFilename(name, seenNames) {
+        if (!seenNames.has(name)) {
+          seenNames.add(name);
+          return name;
+        }
+        const dotIdx = name.lastIndexOf(".");
+        const stem = dotIdx >= 0 ? name.slice(0, dotIdx) : name;
+        const ext = dotIdx >= 0 ? name.slice(dotIdx) : "";
+        let counter = 2;
+        while (true) {
+          const candidate = `${stem}_${counter}${ext}`;
+          if (!seenNames.has(candidate)) {
+            seenNames.add(candidate);
+            return candidate;
+          }
+          counter++;
+        }
+      }
+
+      /* ── File System Access API ───────────────────────────────────────────────── */
+      const fsaSupported = "showDirectoryPicker" in window;
+
+      if (!fsaSupported) {
+        fsaNotice.style.display = "block";
+        folderBtn.disabled = true;
+      }
+
+      async function pickFolder() {
+        if (!fsaSupported) return;
+        try {
+          directoryHandle = await window.showDirectoryPicker({
+            mode: "readwrite",
+          });
+          folderPathEl.textContent = `📁 ${directoryHandle.name}`;
+          folderPathEl.classList.add("selected");
+          subfolderLabel.classList.remove("disabled");
+          log(`Save folder set: "${directoryHandle.name}"`, "log-info");
+          savePrefs();
+        } catch (e) {
+          if (e.name !== "AbortError")
+            log(
+              "The folder was not selected. Chrome's Downloads folder will be used.",
+              "log-warn",
+            );
+        }
+      }
+
+      /* ── Deduplication ─────────────────────────────────────────────────────────
+   Marathon Photos can expose the same fullsize URL through both image tags and
+   background styles. Group by normalized URL and keep one copy.
+────────────────────────────────────────────────────────────────────────────── */
+      function deduplicateUrls(urls) {
+        const groups = new Map();
+        for (const url of urls) {
+          const normalized = normalizePhotoUrl(url);
+          const base = normalized.split("?")[0];
+          const isFullsize = base.includes("/fullsize/");
+          if (!groups.has(base) || isFullsize) {
+            groups.set(base, normalized);
+          }
+        }
+        return [...groups.values()];
+      }
+
+      function decodeHtmlEntities(value) {
+        const textarea = document.createElement("textarea");
+        textarea.innerHTML = value;
+        return textarea.value;
+      }
+
+      function normalizePhotoUrl(url) {
+        const decoded = decodeHtmlEntities(String(url || "").trim())
+          .replace(/^url\(["']?/, "")
+          .replace(/["']?\)$/, "")
+          .replace(/\s+/g, " ");
+        try {
+          const parsed = new URL(decoded);
+          parsed.pathname = parsed.pathname
+            .split("/")
+            .map((part) => encodeURIComponent(decodeURIComponent(part)))
+            .join("/");
+          return parsed.toString();
+        } catch {
+          return decoded.replace(/ /g, "%20");
+        }
+      }
+
+      function isMarathonPhotoUrl(url) {
+        try {
+          const parsed = new URL(normalizePhotoUrl(url));
+          return (
+            parsed.hostname === MARATHON_HOST &&
+            parsed.pathname.includes("/photos/") &&
+            /\.(jpe?g|png|webp|gif)$/i.test(parsed.pathname)
+          );
+        } catch {
+          return false;
+        }
+      }
+
+      function addUrl(candidate, urls) {
+        if (!candidate) return;
+        const normalized = normalizePhotoUrl(candidate);
+        if (isMarathonPhotoUrl(normalized)) urls.add(normalized);
+      }
+
+      function extractUrlsFromSrcset(srcset, urls) {
+        String(srcset || "")
+          .split(",")
+          .map((item) => item.trim().split(/\s+/)[0])
+          .forEach((candidate) => addUrl(candidate, urls));
+      }
+
+      function extractMarathonPhotoUrls(html) {
+        const urls = new Set();
+        const source = decodeHtmlEntities(html || "");
+
+        try {
+          const doc = new DOMParser().parseFromString(source, "text/html");
+          doc
+            .querySelectorAll("img[src], source[src], [data-src]")
+            .forEach((el) => {
+              addUrl(el.getAttribute("src"), urls);
+              addUrl(el.getAttribute("data-src"), urls);
+            });
+          doc.querySelectorAll("[srcset], [data-srcset]").forEach((el) => {
+            extractUrlsFromSrcset(el.getAttribute("srcset"), urls);
+            extractUrlsFromSrcset(el.getAttribute("data-srcset"), urls);
+          });
+          doc.querySelectorAll("[style]").forEach((el) => {
+            const style = el.getAttribute("style") || "";
+            for (const match of style.matchAll(/url\((["']?)(.*?)\1\)/gi)) {
+              addUrl(match[2], urls);
+            }
+          });
+        } catch {
+          log(
+            "Some pasted text was messy, so the tool used a backup photo search.",
+            "log-warn",
+          );
+        }
+
+        for (const match of source.matchAll(MARATHON_IMAGE_PATTERN)) {
+          addUrl(match[0], urls);
+        }
+
+        return deduplicateUrls([...urls]);
+      }
+
+      function updateDetectedCount() {
+        const html = htmlInput.value.trim();
+        const count = html ? extractMarathonPhotoUrls(html).length : 0;
+        detectedRow.classList.toggle("ready", count > 0);
+        detectedRow.classList.toggle("warn", html.length > 0 && count === 0);
+        if (!html) {
+          detectedCount.textContent = "No photos detected yet.";
+        } else if (count === 0) {
+          detectedCount.textContent =
+            "No Marathon Photos image URLs detected in this paste.";
+        } else {
+          detectedCount.textContent = `${count} photo${count === 1 ? "" : "s"} detected.`;
+        }
+      }
+
+      /* ── Logging ──────────────────────────────────────────────────────────────── */
+      function clearLog() {
+        logEl.innerHTML =
+          '<div class="log-entry log-dim">Download updates cleared.</div>';
+      }
+
+      function copyLog() {
+        const logEntries = Array.from(logEl.querySelectorAll(".log-entry")).map(
+          (entry) => entry.textContent,
+        );
+        const logText = logEntries.join("\n");
+
+        if (navigator.clipboard && window.isSecureContext) {
+          // Use modern clipboard API
+          navigator.clipboard
+            .writeText(logText)
+            .then(() => {
+              log("Download updates copied.", "log-success");
+            })
+            .catch((err) => {
+              log("Could not copy the updates: " + err, "log-warn");
+            });
+        } else {
+          // Fallback for older browsers or non-HTTPS
+          const textArea = document.createElement("textarea");
+          textArea.value = logText;
+          textArea.style.position = "fixed";
+          textArea.style.left = "-999999px";
+          textArea.style.top = "-999999px";
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+
+          try {
+            document.execCommand("copy");
+            log("Download updates copied.", "log-success");
+          } catch (err) {
+            log("Could not copy the updates: " + err, "log-warn");
+          }
+
+          document.body.removeChild(textArea);
+        }
+      }
+
+      function log(msg, type = "") {
+        const div = document.createElement("div");
+        div.className = `log-entry ${type}`;
+        div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        logEl.prepend(div);
+      }
+
+      /* ── ETA ──────────────────────────────────────────────────────────────────── */
+      function formatEta(secs) {
+        if (secs < 60) return `~${Math.ceil(secs)}s remaining`;
+        if (secs < 3600)
+          return `~${Math.floor(secs / 60)}m ${Math.ceil(secs % 60)}s remaining`;
+        return `~${Math.floor(secs / 3600)}h ${Math.ceil((secs % 3600) / 60)}m remaining`;
+      }
+
+      /* ── File save helpers ────────────────────────────────────────────────────── */
+      function getFileType(filename) {
+        const ext = filename.split(".").pop().toLowerCase();
+        if (IMAGE_EXTS.includes(ext)) return "images";
+        return "other";
+      }
+
+      async function getSubfolderHandle(rootHandle, filename) {
+        if (!subfolderCheck.checked || !rootHandle) return rootHandle;
+        const type = getFileType(filename);
+        if (type === "other") return rootHandle;
+        try {
+          return await rootHandle.getDirectoryHandle(type, { create: true });
+        } catch {
+          return rootHandle;
+        }
+      }
+
+      async function saveViaFSA(blob, filename, rootHandle) {
+        const folderHandle = await getSubfolderHandle(rootHandle, filename);
+        const fileHandle = await folderHandle.getFileHandle(filename, {
+          create: true,
+        });
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+      }
+
+      function saveViaAnchor(blob, filename) {
+        const url = window.URL.createObjectURL(blob);
+        const a = Object.assign(document.createElement("a"), {
+          href: url,
+          download: filename,
+        });
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.dispatchEvent(
+          new MouseEvent("click", {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+          }),
+        );
+        document.body.removeChild(a);
+        setTimeout(() => window.URL.revokeObjectURL(url), 30000);
+      }
+
+      function saveViaDirectLink(url, filename) {
+        const a = Object.assign(document.createElement("a"), {
+          href: url,
+          download: filename,
+          rel: "noopener",
+        });
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      function safeFilenameFromUrl(url, index, extOverride = "") {
+        const cleanUrl = url.replace(/&amp;/g, "&");
+        let rawName = "";
+        try {
+          rawName = decodeURIComponent(cleanUrl.split("/").pop().split("?")[0]);
+        } catch {
+          rawName = cleanUrl.split("/").pop().split("?")[0];
+        }
+
+        if (!rawName || !rawName.includes(".")) {
+          rawName = `photo_${index + 1}.${extOverride || "jpg"}`;
+        } else if (extOverride) {
+          const nameParts = rawName.split(".");
+          nameParts.pop();
+          rawName = `${nameParts.join(".")}.${extOverride}`;
+        }
+
+        return rawName.replace(/[\\/:*?"<>|]/g, "-");
+      }
+
+      /* ── Single file download ─────────────────────────────────────────────────── */
+      // Returns: { saved: filename } on success, { skipped: filename } if dupe-skipped,
+      //          or null on fetch/write error.
+      async function downloadOne(url, index, seenNames) {
+        try {
+          const cleanUrl = url.replace(/&amp;/g, "&");
+
+          // Request original formats, but be prepared for the server to ignore us
+          const res = await fetch(cleanUrl, {
+            method: "GET",
+            headers: {
+              Accept: "image/jpeg,image/png,image/gif,image/svg+xml,*/*",
+            },
+          });
+
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+          const blob = await res.blob();
+          const contentType = (res.headers.get("Content-Type") || "")
+            .split(";")[0]
+            .trim()
+            .toLowerCase();
+
+          // 1. Map the ACTUAL content type to an extension
+          const mimeToExt = {
+            "image/jpeg": "jpg",
+            "image/png": "png",
+            "image/webp": "webp",
+            "image/gif": "gif",
+            "image/svg+xml": "svg",
+          };
+
+          const actualExt =
+            mimeToExt[contentType] ||
+            cleanUrl.split("?")[0].toLowerCase().split(".").pop() ||
+            "jpg";
+
+          const rawName = safeFilenameFromUrl(cleanUrl, index, actualExt);
+
+          if (dupMode === "skip" && seenNames.has(rawName)) {
+            return { skipped: rawName };
+          }
+
+          // 4. Resolve filename collisions
+          const filename =
+            dupMode === "download"
+              ? resolveFilename(rawName, seenNames)
+              : rawName;
+
+          if (dupMode === "skip") {
+            seenNames.add(rawName);
+          }
+
+          if (directoryHandle) {
+            await saveViaFSA(blob, filename, directoryHandle);
+          } else {
+            saveViaAnchor(blob, filename);
+          }
+          return { saved: filename };
+        } catch (e) {
+          if (!directoryHandle) {
+            const rawName = safeFilenameFromUrl(url, index);
+            if (dupMode === "skip" && seenNames.has(rawName)) {
+              return { skipped: rawName };
+            }
+            const filename =
+              dupMode === "download"
+                ? resolveFilename(rawName, seenNames)
+                : rawName;
+            if (dupMode === "skip") {
+              seenNames.add(rawName);
+            }
+            saveViaDirectLink(url, filename);
+            return { saved: filename, direct: true };
+          }
+          return null;
+        }
+      }
+
+      /* ── Cancel ───────────────────────────────────────────────────────────────── */
+      function cancelExtraction() {
+        cancelRequested = true;
+        log("Stopping after the photos already in progress finish...", "log-warn");
+      }
+
+      /* ── Notifications ────────────────────────────────────────────────────────── */
+      function notify(successCount, failCount) {
+        const body = `Done! ${successCount} files saved${failCount > 0 ? `, ${failCount} need attention` : ""}.`;
+        if (Notification.permission === "granted") {
+          new Notification("Download Marathon Photos", { body });
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then((p) => {
+            if (p === "granted")
+              new Notification("Download Marathon Photos", { body });
+          });
+        }
+      }
+
+      /* ── Main extraction — concurrent worker pool ─────────────────────────────── */
+      async function startExtraction() {
+        const html = htmlInput.value;
+        const rawUrls = extractMarathonPhotoUrls(html);
+        const urls = deduplicateUrls(rawUrls);
+
+        if (urls.length === 0) {
+          log(
+            "No photos found yet. Make sure you copied the full <body> element from the Marathon Photos page.",
+            "log-warn",
+          );
+          return;
+        }
+
+        const cdnDupeCount = rawUrls.length - urls.length;
+
+        // Reset per-run state
+        cancelRequested = false;
+        let successCount = 0,
+          failCount = 0,
+          skipCount = 0,
+          doneCount = 0;
+        const seenNames = new Set(); // shared across all workers, accessed synchronously
+        const N = urls.length;
+
+        // UI → running
+        startBtn.disabled = true;
+        cancelBtn.style.display = "flex";
+        progCont.style.display = "block";
+        statsBar.style.display = "flex";
+        consoleDot.classList.add("active");
+        progFill.style.width = "0%";
+
+        // Show/hide dupes chip based on mode
+        statDupes.style.display = dupMode === "skip" ? "inline-flex" : "none";
+
+        statTotal.innerHTML = `<i class="fas fa-layer-group"></i> ${N} total`;
+        statSuccess.innerHTML = `<i class="fas fa-circle-check"></i> 0 saved`;
+        statFailed.innerHTML = `<i class="fas fa-circle-xmark"></i> 0 need attention`;
+        statDupes.innerHTML = `<i class="fas fa-ban"></i> 0 skipped`;
+        statEta.innerHTML = `<i class="fas fa-clock"></i> Calculating…`;
+
+        log(
+          `${N} photo${N !== 1 ? "s" : ""} found. Starting download${cdnDupeCount > 0 ? ` after skipping ${cdnDupeCount} repeat link${cdnDupeCount > 1 ? "s" : ""}` : ""}.`,
+          "log-info",
+        );
+        if (directoryHandle)
+          log(
+            `Saving to "${directoryHandle.name}"${subfolderCheck.checked ? " in an images folder" : ""}.`,
+            "log-info",
+          );
+
+        const startTime = Date.now();
+        let cursor = 0;
+
+        async function worker() {
+          while (cursor < N && !cancelRequested) {
+            const i = cursor++;
+            const url = urls[i];
+            const result = await downloadOne(url, i, seenNames);
+            doneCount++;
+
+            if (result === null) {
+              // Fetch/write error
+              const name =
+                decodeURIComponent(url.split("/").pop().split("?")[0]) ||
+                `asset_${i + 1}`;
+              failCount++;
+              log(`[${doneCount}/${N}] Could not save ${name}`, "log-warn");
+            } else if (result.skipped) {
+              skipCount++;
+              log(
+                `[${doneCount}/${N}] Skipped repeat photo: ${result.skipped}`,
+                "log-dim",
+              );
+              statDupes.innerHTML = `<i class="fas fa-ban"></i> ${skipCount} skipped`;
+            } else {
+              const wasRenamed =
+                result.saved !==
+                decodeURIComponent(url.split("/").pop().split("?")[0]);
+              successCount++;
+              log(
+                `[${doneCount}/${N}] Saved ${result.saved}${wasRenamed ? " with a new name" : ""}${result.direct ? " through Chrome" : ""}`,
+                "log-success",
+              );
+            }
+
+            progFill.style.width = `${(doneCount / N) * 100}%`;
+            statSuccess.innerHTML = `<i class="fas fa-circle-check"></i> ${successCount} saved`;
+            statFailed.innerHTML = `<i class="fas fa-circle-xmark"></i> ${failCount} need attention`;
+
+            const elapsed = (Date.now() - startTime) / 1000;
+            const remaining = (elapsed / doneCount) * (N - doneCount);
+            statEta.innerHTML =
+              doneCount < N
+                ? `<i class="fas fa-clock"></i> ${formatEta(remaining)}`
+                : `<i class="fas fa-clock"></i> Done`;
+          }
+        }
+
+        await Promise.all(Array.from({ length: concurrency }, worker));
+
+        // UI → done
+        startBtn.disabled = false;
+        cancelBtn.style.display = "none";
+        consoleDot.classList.remove("active");
+
+        if (cancelRequested) {
+          log(
+            `Stopped. ${successCount} saved, ${failCount} need attention${skipCount > 0 ? `, ${skipCount} skipped` : ""}, ${N - doneCount} not started.`,
+            "log-warn",
+          );
+        } else {
+          const allOk = failCount === 0;
+          const skipSummary =
+            skipCount > 0
+              ? `, ${skipCount} duplicate${skipCount > 1 ? "s" : ""} skipped`
+              : "";
+          log(
+            `Done. ${successCount} saved, ${failCount} could not be saved${skipSummary}.`,
+            allOk ? "log-success" : "log-warn",
+          );
+          startBtn.innerHTML = allOk
+            ? '<i class="fas fa-circle-check"></i> Download Complete'
+            : '<i class="fas fa-triangle-exclamation"></i> Finished With Notes';
+          notify(successCount, failCount);
+          setTimeout(() => {
+            startBtn.innerHTML =
+              '<i class="fas fa-download"></i> Download Photos';
+          }, 4000);
+        }
+      }
+
+      /* ── Init ─────────────────────────────────────────────────────────────────── */
+      loadPrefs();
+      updateDetectedCount();
+      htmlInput.addEventListener("input", updateDetectedCount);
+    </script>
+
+    <script>
+      /* ── Mobile device detection ───────────────────────────────────────────────── */
+      function detectMobileDevice() {
+        const mobileWarning = document.getElementById("mobileWarning");
+
+        // Check if device is likely a mobile device
+        const isMobile =
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+          ) ||
+          (window.innerWidth <= 768 &&
+            window.innerHeight <= 1024 &&
+            "ontouchstart" in window);
+
+        // Additional check: if screen is very small and has touch capability
+        const hasTouch =
+          "ontouchstart" in window || navigator.maxTouchPoints > 0;
+        const smallScreen = window.innerWidth <= 768;
+
+        if (isMobile || (hasTouch && smallScreen)) {
+          mobileWarning.style.display = "block";
+        }
+      }
+
+      // Initialize lightbox and check for mobile devices after DOM is loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        detectMobileDevice();
+      });
+    </script>
+  </body>
+</html>
